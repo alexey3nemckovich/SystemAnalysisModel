@@ -1,0 +1,2 @@
+class AttributedObject(object):
+    pass
