@@ -1,19 +1,6 @@
-import argparse
 import sys
-from Simulator import simulate
+from option33 import create_args_parser
 from Simulator import build_model_graph
-
-
-def create_args_parser():
-    parser = argparse.ArgumentParser(
-        description='System simulator'
-    )
-    required_args = parser.add_argument_group('required named arguments')
-    required_args.add_argument('--c', type=int, help='Count tacts before source gives new request', required=True)
-    required_args.add_argument('--p1', type=float, help='Probability that request will not be processed by first channel', required=True)
-    required_args.add_argument('--p2', type=float, help='Probability that request will not be processed by second channel', required=True)
-    required_args.add_argument('--n', type=int, help='Count tacts to simulate', required=True)
-    return parser
 
 
 def parse_params():
