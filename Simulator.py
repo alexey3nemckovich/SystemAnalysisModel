@@ -2,29 +2,52 @@ import sys
 from random import random
 from Model import ModelTransition
 from AttribtutedObject import AttributedObject
+from LemerNumbersGenerator import edGenerator
 ##option specific
-from option33 import get_next_state
-from option33 import start_state
+from option15 import *
 
 
-def simulate(simulation_params):
-    res = AttributedObject()
-
+def simulate(params):
     state = start_state
+    statistics = ModelSimulationStatistics(params.p1, params.p2)
 
-    print(start_state.to_string())
+    states_tacts_count = dict()
+    for i in range(params.n):
+        ##Count tacts, that system was in state
+        state_str = state.to_string()
+        if not state_str in states_tacts_count:
+            states_tacts_count[state_str] = 1
+        else:
+            states_tacts_count[state_str] += 1
+        #######################################
 
-    for i in range(simulation_params.n):
-        first_channel_should_change_state = random() <= simulation_params.p1
-        second_channel_should_change_state = random() <= simulation_params.p2
+        ##Imitate event of changing by channels their states
+        if state.first_channel_is_busy:
+            first_channel_should_change_state = not (random() <= params.p1)
+        else:
+            first_channel_should_change_state = False
 
-        state = get_next_state(state, first_channel_should_change_state, second_channel_should_change_state, 2, simulation_params.c)
-        print(state.to_string())
+        if state.second_channel_is_busy:
+            second_channel_should_change_state = not (random() <= params.p2)
+        else:
+            second_channel_should_change_state = False
 
-    return res
+        ##new state calculation according to channels events
+        state = get_next_state_with_statistics(state, params, first_channel_should_change_state, second_channel_should_change_state, statistics)
+
+    statistics.calculate(params.n)
+
+    print("Simulation results:\n\r")
+
+    for key in states_tacts_count:
+        print("P" + key + " = " + str(states_tacts_count[key] / params.n))
+
+    print ("\n\rParamaters values:\n\r")
+    print(statistics)
 
 
 def find_all_transitions(state, params, transitions, all_states):
+
     next_states = set()
 
     if state.first_channel_is_busy and state.second_channel_is_busy:
@@ -74,7 +97,6 @@ def find_all_transitions(state, params, transitions, all_states):
 
 
 def build_model_graph(simulation_params):
-    res = AttributedObject()
 
     transitions = []
     all_states = {start_state}
@@ -92,8 +114,7 @@ def build_model_graph(simulation_params):
 
     print("Equation system")
     for state in all_states:
-        print("State = " + state.to_string())
-        sys.stdout.write("Probability = ")
+        sys.stdout.write("P" + state.to_string() + " = ")
 
         count = 0
         for transition in transitions:

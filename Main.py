@@ -1,6 +1,8 @@
 import sys
-from option33 import create_args_parser
 from Simulator import build_model_graph
+from Simulator import simulate
+##option specific
+from option15 import create_args_parser
 
 
 def parse_params():
@@ -21,5 +23,5 @@ def parse_params():
 
 if __name__ == '__main__':
     params = parse_params()
-    ##res = simulate(params)
     build_model_graph(params)
+    simulate(params)
